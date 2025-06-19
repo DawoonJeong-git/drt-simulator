@@ -19,6 +19,12 @@ function PlaybackController({
   const minuteRef = useRef(null);
   const secondRef = useRef(null);
 
+  const isPlayingRef = useRef(isPlaying);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
   useEffect(() => {
     let animationFrameId = null;
     let lastTime = performance.now();
@@ -49,9 +55,11 @@ function PlaybackController({
     setSecond(String(total % 60).padStart(2, "0"));
   }, [elapsedTime]);
 
+  
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.code === "Space") {
+      const tag = e.target.tagName;
+      if (e.key.toLowerCase() === "p") {
         e.preventDefault();
         setIsPlaying((prev) => !prev);
       } else if (e.key === "ArrowDown") {
@@ -127,7 +135,7 @@ function PlaybackController({
         padding: "1em 1.5em",
         borderRadius: "0.5em",
         boxShadow: "0 0 0.4em rgba(0,0,0,0.3)",
-        fontSize: "12px", // 전체 기준 크기 확대
+        fontSize: "12px",
         display: "flex",
         alignItems: "center",
         whiteSpace: "nowrap",

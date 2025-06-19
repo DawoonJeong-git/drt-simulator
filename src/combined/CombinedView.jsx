@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import MapView from "../maplibre/MapView";
 import DeckGL from "@deck.gl/react";
 import { getVehicleLayers } from "../deck/VehicleLayer";
@@ -21,9 +21,15 @@ function CombinedView() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [deckLayers, setDeckLayers] = useState([]);
-  const [hideUI, setHideUI] = useState(false); // ✅ UI 숨김 여부 (녹화용)
+  const [hideUI, setHideUI] = useState(false);
 
   const stationCoords = useStationCoords();
+  const isPlayingRef = useRef(isPlaying);
+
+  // 최신 상태 유지
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   useEffect(() => {
     async function updateLayers() {
@@ -37,9 +43,7 @@ function CombinedView() {
   }, [routeData, elapsedTime, stationCoords]);
 
   return (
-    <div
-      style={{ position: "relative", width: "100vw", height: "100vh" }}
-    >
+    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       {/* ✅ 녹화 대상: 지도 + 차량 */}
       <div
         id="canvas-container"
@@ -70,7 +74,7 @@ function CombinedView() {
         />
       </div>
 
-      {/* 🎛️ UI 컨트롤러들 – 항상 표시 (녹화 시에도 보이도록 변경) */}
+      {/* 🎛️ UI 컨트롤러들 */}
       <UploadController onRouteDataUpdate={setRouteData} />
       <PlaybackController
         elapsedTime={elapsedTime}
@@ -80,8 +84,6 @@ function CombinedView() {
         speed={speed}
         setSpeed={setSpeed}
       />
-
-      {/* ⏺ 녹화 버튼은 항상 표시되며, setHideUI 전달 (지금은 UI 숨김 비활성화 상태) */}
       <RecordingController setHideUI={setHideUI} />
     </div>
   );
