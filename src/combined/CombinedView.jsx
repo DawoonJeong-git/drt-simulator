@@ -91,7 +91,7 @@ function CombinedView() {
       </div>
 
       {!hideUI && (
-        <div style={{ position: "absolute", bottom: 100, left: 20, zIndex: 1000 }}>
+        <div style={{ position: "absolute", bottom: 20, left: 20, zIndex: 1000 }}>
           <UploadController onRouteDataUpdate={setRouteData} />
         </div>
       )}

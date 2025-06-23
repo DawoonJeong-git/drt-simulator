@@ -125,9 +125,19 @@ function PlaybackController({
   };
 
   return (
-    <div style={controlBoxStyle}>
+    <div
+      style={{
+        ...controlBoxStyle,
+        display: "flex",
+        flexWrap: "nowrap",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        gap: "1em",
+        whiteSpace: "nowrap"
+      }}
+    >
       {/* ▶/⏸ + 🔁 초기화 */}
-      <div style={{ display: "flex", gap: "0.5em" }}>
+      <div style={{ display: "flex", gap: "0.5em", flexShrink: 0 }}>
         <button style={darkButtonStyle} onClick={() => setIsPlaying((prev) => !prev)}>
           {isPlaying ? "⏸ 재생/정지" : "▶️ 재생/정지"}
         </button>
@@ -135,7 +145,7 @@ function PlaybackController({
       </div>
 
       {/* 슬라이더 + 시간 입력 */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.8em", marginLeft: "1.5em" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.8em", flexShrink: 0 }}>
         <input
           type="range"
           min={0}
@@ -145,7 +155,7 @@ function PlaybackController({
           onChange={handleSliderChange}
           style={{ width: "250px" }}
         />
-        <span>
+        <span style={{ whiteSpace: "nowrap" }}>
           <input
             ref={hourRef}
             value={hour}
@@ -188,21 +198,26 @@ function PlaybackController({
       </div>
 
       {/* 속도 조절 */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5em", marginLeft: "1.5em" }}>
-        <strong
-          style={fixedMonoTextStyle}>
-            <span>Speed: x</span>
-            <span style={{
-              display: "inline-block",
-              fontFamily: "monospace",
-              width: "50px",               // 숫자 영역 고정
-              textAlign: "right",
-            }}>
-              {speed.toFixed(1)}
-            </span>
-        </strong>
-
-
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "0.5em",
+        flexShrink: 0
+      }}>
+        <span style={{
+          fontFamily: "monospace",
+          fontWeight: "bold"
+        }}>
+          Speed: x&nbsp;
+          <span style={{
+            display: "inline-block",
+            fontFamily: "monospace",
+            width: "50px",
+            textAlign: "right"
+          }}>
+            {speed.toFixed(1)}
+          </span>
+        </span>
 
         <button style={darkButtonStyle} onClick={handleSpeedDecrease}>–</button>
         <input
