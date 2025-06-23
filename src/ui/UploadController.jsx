@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import axios from "axios";
+import { getAPIBase } from "../utils/api";
 
 function UploadController({ onRouteDataUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,7 +28,7 @@ function UploadController({ onRouteDataUpdate }) {
 
     try {
       if (uploadMode === "input") {
-        const res = await axios.post("/api/generate", formData);
+        const res = await axios.post(`${getAPIBase()}/api/generate`, formData);
         const json = res.data;
         if (json.routes) {
           onRouteDataUpdate(json.routes);
@@ -36,10 +37,10 @@ function UploadController({ onRouteDataUpdate }) {
           throw new Error("routes 데이터가 없습니다.");
         }
       } else if (uploadMode === "output_json") {
-        await axios.post("/upload_output_json", formData);
+        await axios.post(`${getAPIBase()}/upload_output_json`, formData);
         alert("✅ output.json 업로드 완료");
 
-        const routeRes = await fetch("/route_output.json");
+        const routeRes = await fetch(`${getAPIBase()}/route_output.json`);
         const data = await routeRes.json();
         onRouteDataUpdate(data);
       }
