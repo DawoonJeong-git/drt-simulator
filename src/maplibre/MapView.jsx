@@ -80,9 +80,8 @@ function MapView({ viewState, setViewState }) {
         }
       });
 
-      // ✅ 이동/회전/줌/피치 적용
       if (deltaX !== 0 || deltaY !== 0) {
-        map.panBy([deltaX, deltaY], { duration: 0 }); // 즉시 이동
+        map.panBy([deltaX, deltaY], { duration: 0 });
       }
       map.setBearing(newBearing);
       map.setZoom(newZoom);
@@ -91,8 +90,6 @@ function MapView({ viewState, setViewState }) {
 
     const handleKeyDown = (e) => {
       const key = e.key.toLowerCase();
-
-      // ✅ R 키 → 초기화
       if (key === "r") {
         mapRef.current?.jumpTo({
           center: [viewState.longitude, viewState.latitude],
@@ -112,7 +109,6 @@ function MapView({ viewState, setViewState }) {
     const handleKeyUp = (e) => {
       const key = e.key.toLowerCase();
       heldKeys.delete(key);
-
       if (heldKeys.size === 0 && animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
@@ -152,6 +148,33 @@ function MapView({ viewState, setViewState }) {
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
+
+  // ✅ DeckGL → MapLibre 카메라 상태 반영
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+    const pitch = map.getPitch();
+    const bearing = map.getBearing();
+
+    const changed =
+      center.lng !== viewState.longitude ||
+      center.lat !== viewState.latitude ||
+      zoom !== viewState.zoom ||
+      pitch !== viewState.pitch ||
+      bearing !== viewState.bearing;
+
+    if (changed) {
+      map.jumpTo({
+        center: [viewState.longitude, viewState.latitude],
+        zoom: viewState.zoom,
+        pitch: viewState.pitch,
+        bearing: viewState.bearing,
+      });
+    }
+  }, [viewState]);
 
   return (
     <div

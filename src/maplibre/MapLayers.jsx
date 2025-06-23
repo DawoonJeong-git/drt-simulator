@@ -13,7 +13,7 @@ export function addMapLibreLayers(map) {
     layout: { "line-join": "round", "line-cap": "round" },
     paint: {
       "line-color": "#ffffff",
-      "line-opacity": 1,
+      "line-opacity": 0.5,
       "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.5, 14, 3, 18, 6],
     },
   });
@@ -28,28 +28,13 @@ export function addMapLibreLayers(map) {
     type: "circle",
     source: "station",
     paint: {
-      "circle-radius": 3,
-      "circle-color": "#ff4d91",
-      "circle-opacity": 1,
-      "circle-stroke-width": 1.5,
-      "circle-stroke-color": "#ffffff",
-      "circle-stroke-opacity": 0.9,
+      "circle-radius": 1,
+      "circle-color": "#ffffff",
+      "circle-opacity": 0.8,
+      "circle-stroke-width": 2,
+      "circle-stroke-color": "#ffff00",
+      "circle-stroke-opacity": 0.8,
     },
   });
 
-  // ✅ Node Layer
-  map.addSource("node", {
-    type: "geojson",
-    data: "/Node.geojson",
-  });
-  map.addLayer({
-    id: "node-layer",
-    type: "circle",
-    source: "node",
-    paint: {
-      "circle-radius": 1.2,
-      "circle-color": "#aaaaaa",
-      "circle-opacity": 0.6,
-    },
-  });
 }

@@ -52,25 +52,16 @@ def upload_output_csv():
         print("❌ CSV → JSON 변환 실패:", e)
         return jsonify({"status": "error", "message": "CSV to JSON 변환 실패"}), 500
 
-
+# 📤 OUTPUT JSON 직접 업로드
 @app.route("/upload_output_json", methods=["POST"])
 def upload_output_json():
     file = request.files.get("file")
     if not file:
         return jsonify({"status": "error", "message": "No file"}), 400
 
-    json_path = "public/route_output.json"
-    file.save(json_path)
+    file.save("public/route_output.json")
     print("✅ route_output.json 직접 업로드 완료")
-
-    # ✅ 업로드된 JSON을 바로 읽어서 응답
-    try:
-        with open(json_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return jsonify(data)
-    except Exception as e:
-        print("❌ JSON 파일 파싱 실패:", e)
-        return jsonify({"status": "error", "message": "Invalid JSON"}), 500
+    return jsonify({"status": "success", "message": "Output JSON 업로드 완료"}), 200
 
 # ✅ 기존 방식: 알고리즘 실행 후 JSON 파일 생성
 @app.route("/api/generate", methods=["GET"])
@@ -104,8 +95,6 @@ def generate_route_api():
 
         return jsonify(output)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         print("❌ 실시간 API 응답 실패:", e)
         return jsonify({"error": str(e)}), 500
 

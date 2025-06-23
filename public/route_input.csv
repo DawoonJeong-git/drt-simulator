@@ -1,5 +1,5 @@
-﻿VehicleID,StartTime,Stop_1,Type_1,Stop_2,Type_2,Stop_3,Type_3,Stop_4,Type_4,Stop_5,Type_5,Stop_6,Type_6,Stop_7,Type_7,Stop_8,Type_8,Stop_9,Type_9,Stop_10
-1,8:02:00,S413000930,start,S413000410,end,,,,,,,,,,,,,,,
-2,8:02:30,S413000660,start,S413000720,end,,,,,,,,,,,,,,,
-3,8:03:00,S413000470,start,S413000880,end,,,,,,,,,,,,,,,
-1,8:20:00,S413000380,start,S413001630,start,S413000660,end,S413000720,end,,,,,,,,,,,
+﻿Vehicle_ID,Vehicle_Type,StartTime,1_StationID,1_Pickup_general,1_Pickup_wheelchair,1_Dropoff_general,1_Dropoff_wheelchair,2_StationID,2_Pickup_general,2_Pickup_wheelchair,2_Dropoff_general,2_Dropoff_wheelchair,3_StationID,3_Pickup_general,3_Pickup_wheelchair,3_Dropoff_general,3_Dropoff_wheelchair,4_StationID,4_Pickup_general,4_Pickup_wheelchair,4_Dropoff_general,4_Dropoff_wheelchair,5_StationID,5_Pickup_general,5_Pickup_wheelchair,5_Dropoff_general,5_Dropoff_wheelchair,6_StationID,6_Pickup_general,6_Pickup_wheelchair,6_Dropoff_general,6_Dropoff_wheelchair,7_StationID,7_Pickup_general,7_Pickup_wheelchair,7_Dropoff_general,7_Dropoff_wheelchair,8_StationID,8_Pickup_general,8_Pickup_wheelchair,8_Dropoff_general,8_Dropoff_wheelchair,9_StationID,9_Pickup_general,9_Pickup_wheelchair,9_Dropoff_general,9_Dropoff_wheelchair,10_StationID,10_Pickup_general,10_Pickup_wheelchair,10_Dropoff_general,10_Dropoff_wheelchair
+1,carnival_wheel,8:02:00,S413000930,,1,,,S413000410,,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+2,carnival_general,8:02:30,S413000660,4,,,,S413000720,,,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+3,ionic,8:03:00,S413000470,2,,,,S413000880,,,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+4,carnival_general,8:20:00,S413000380,2,,,,S413001630,3,,,,S413000660,,,3,,S413000720,,,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

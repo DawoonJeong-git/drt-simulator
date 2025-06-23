@@ -39,6 +39,15 @@ def interpolate_coords_by_speed(coords, speed_kmh):
     return result
 
 
+def safe_int_or_none(val):
+    try:
+        if pd.isna(val):
+            return None
+        return int(float(val))
+    except:
+        return None
+
+
 def generate_routes(df, city="sejong", speed_kmh=30, stop_duration_sec=60):
     with open("public/garage.json", "r", encoding="utf-8") as f:
         garage_station_id = json.load(f)["garageStationId"]
@@ -53,25 +62,41 @@ def generate_routes(df, city="sejong", speed_kmh=30, stop_duration_sec=60):
     results = []
 
     for _, row in df.iterrows():
-        vehicle_id = row["VehicleID"]
+        vehicle_id = row["Vehicle_ID"]
+        vehicle_type = row["Vehicle_Type"]
         start_time = row["StartTime"]
 
         stops = []
         stop_ids = []
-        for i in range(1, 11):
-            stop_col = f"Stop_{i}"
-            type_col = f"Type_{i}"
-            stop = str(row.get(stop_col, "")).strip()
-            stop_type = str(row.get(type_col, "")).strip().lower()
 
-            if stop and stop.lower() != "nan":
-                stops.append({"station": stop, "type": stop_type})
-                stop_ids.append(stop)
-            else:
+        for i in range(1, 11):
+            sid_col = f"{i}_StationID"
+            pg_col = f"{i}_Pickup_general"
+            pw_col = f"{i}_Pickup_wheelchair"
+            dg_col = f"{i}_Dropoff_general"
+            dw_col = f"{i}_Dropoff_wheelchair"
+
+            sid = str(row.get(sid_col, "")).strip()
+            if not sid or sid.lower() == "nan":
                 break
 
-        if len(stop_ids) < 2:
-            print(f"Warning: {vehicle_id} has fewer than 2 stops. Skipped.")
+            stop = {"station": sid}
+
+            for key, col in [
+                ("pickup_general", pg_col),
+                ("pickup_wheelchair", pw_col),
+                ("dropoff_general", dg_col),
+                ("dropoff_wheelchair", dw_col),
+            ]:
+                val = safe_int_or_none(row.get(col))
+                if val is not None:
+                    stop[key] = val
+
+            stops.append(stop)
+            stop_ids.append(sid)
+
+        if len(stop_ids) < 1:
+            print(f"⚠️ Vehicle {vehicle_id} has no valid stops. Skipping.")
             continue
 
         station_list = [garage_station_id] + stop_ids + [garage_station_id]
@@ -83,7 +108,7 @@ def generate_routes(df, city="sejong", speed_kmh=30, stop_duration_sec=60):
                 path = calculate_path(G, station_list[i], station_list[i + 1], link, station, node, nodeR)
                 segments.append(path)
             except Exception as e:
-                print(f"Route error {vehicle_id}: {station_list[i]} → {station_list[i + 1]}:", e)
+                print(f"❌ Route error {vehicle_id}: {station_list[i]} → {station_list[i + 1]}:", e)
                 failed = True
                 break
         if failed:
@@ -94,12 +119,12 @@ def generate_routes(df, city="sejong", speed_kmh=30, stop_duration_sec=60):
             seg_coords = [[pt[1], pt[0]] for pt in path["coords"]]
             interpolated = interpolate_coords_by_speed(seg_coords, speed_kmh)
             coords += interpolated
-
             if i < len(segments) - 1 and len(interpolated) > 0:
                 coords += [interpolated[-1]] * stop_duration_sec
 
         results.append({
             "vehicle_id": vehicle_id,
+            "vehicle_type": vehicle_type,
             "start_time": start_time,
             "stops": stops,
             "coords": coords

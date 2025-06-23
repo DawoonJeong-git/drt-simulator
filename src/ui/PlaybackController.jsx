@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { controlBoxStyle, darkButtonStyle } from "./CommonStyles";
+import { fixedMonoTextStyle } from "./CommonStyles";
 
 function PlaybackController({
   elapsedTime,
@@ -18,12 +20,6 @@ function PlaybackController({
   const hourRef = useRef(null);
   const minuteRef = useRef(null);
   const secondRef = useRef(null);
-
-  const isPlayingRef = useRef(isPlaying);
-
-  useEffect(() => {
-    isPlayingRef.current = isPlaying;
-  }, [isPlaying]);
 
   useEffect(() => {
     let animationFrameId = null;
@@ -52,26 +48,31 @@ function PlaybackController({
     const total = 8 * 3600 + Math.floor(elapsedTime);
     setHour(String(Math.floor(total / 3600)).padStart(2, "0"));
     setMinute(String(Math.floor((total % 3600) / 60)).padStart(2, "0"));
-    setSecond(String(total % 60).padStart(2, "0"));
+    setSecond(String(Math.floor(total % 60)).padStart(2, "0"));
   }, [elapsedTime]);
 
-  
   useEffect(() => {
     const onKeyDown = (e) => {
-      const tag = e.target.tagName;
-      if (e.key.toLowerCase() === "p") {
+      const tag = e.target.tagName.toLowerCase();
+      const isTypingField = ["input", "textarea", "select"].includes(tag);
+      const key = e.key.toLowerCase();
+
+      if (key === " " && !isTypingField) {
         e.preventDefault();
         setIsPlaying((prev) => !prev);
-      } else if (e.key === "ArrowDown") {
+      } else if (key === "r" && !isTypingField) {
+        e.preventDefault();
+        handleReset();
+      } else if (key === "arrowdown") {
         e.preventDefault();
         handleSpeedDecrease();
-      } else if (e.key === "ArrowUp") {
+      } else if (key === "arrowup") {
         e.preventDefault();
         handleSpeedIncrease();
-      } else if (e.key === "ArrowLeft") {
+      } else if (key === "arrowleft") {
         e.preventDefault();
         setElapsedTime((prev) => Math.max(0, prev - SLIDER_STEP));
-      } else if (e.key === "ArrowRight") {
+      } else if (key === "arrowright") {
         e.preventDefault();
         setElapsedTime((prev) => Math.min(SLIDER_MAX, prev + SLIDER_STEP));
       }
@@ -124,33 +125,17 @@ function PlaybackController({
   };
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        bottom: 20,
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 1000,
-        backgroundColor: "white",
-        padding: "1em 1.5em",
-        borderRadius: "0.5em",
-        boxShadow: "0 0 0.4em rgba(0,0,0,0.3)",
-        fontSize: "12px",
-        display: "flex",
-        alignItems: "center",
-        whiteSpace: "nowrap",
-        overflowX: "auto",
-      }}
-    >
-      {/* 그룹 1: 재생 / 정지 / 초기화 */}
-      <div style={{ display: "flex", gap: "0.5em", marginRight: "1.5em" }}>
-        <button style={{ fontSize: "1em", padding: "0.4em 0.8em" }} onClick={() => setIsPlaying(true)}>▶️ 재생</button>
-        <button style={{ fontSize: "1em", padding: "0.4em 0.8em" }} onClick={() => setIsPlaying(false)}>⏸ 정지</button>
-        <button style={{ fontSize: "1em", padding: "0.4em 0.8em" }} onClick={handleReset}>🔁 초기화</button>
+    <div style={controlBoxStyle}>
+      {/* ▶/⏸ + 🔁 초기화 */}
+      <div style={{ display: "flex", gap: "0.5em" }}>
+        <button style={darkButtonStyle} onClick={() => setIsPlaying((prev) => !prev)}>
+          {isPlaying ? "⏸ 재생/정지" : "▶️ 재생/정지"}
+        </button>
+        <button style={darkButtonStyle} onClick={handleReset}>🔁 초기화</button>
       </div>
 
-      {/* 그룹 2: 슬라이더 + 시간 입력 */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.8em", marginRight: "1.5em" }}>
+      {/* 슬라이더 + 시간 입력 */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.8em", marginLeft: "1.5em" }}>
         <input
           type="range"
           min={0}
@@ -158,7 +143,7 @@ function PlaybackController({
           step={0.05}
           value={elapsedTime}
           onChange={handleSliderChange}
-          style={{ width: "25em" }}
+          style={{ width: "250px" }}
         />
         <span>
           <input
@@ -166,7 +151,12 @@ function PlaybackController({
             value={hour}
             onChange={(e) => setHour(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, "hh")}
-            style={{ width: "2.2em", fontSize: "1em", textAlign: "center" }}
+            style={{
+              width: "2.8em",
+              fontSize: "1em",
+              textAlign: "center",
+              fontFamily: "monospace",
+            }}
           />
           :
           <input
@@ -174,7 +164,12 @@ function PlaybackController({
             value={minute}
             onChange={(e) => setMinute(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, "mm")}
-            style={{ width: "2.2em", fontSize: "1em", textAlign: "center" }}
+            style={{
+              width: "2.8em",
+              fontSize: "1em",
+              textAlign: "center",
+              fontFamily: "monospace",
+            }}
           />
           :
           <input
@@ -182,15 +177,34 @@ function PlaybackController({
             value={second}
             onChange={(e) => setSecond(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, "ss")}
-            style={{ width: "2.2em", fontSize: "1em", textAlign: "center" }}
+            style={{
+              width: "2.8em",
+              fontSize: "1em",
+              textAlign: "center",
+              fontFamily: "monospace",
+            }}
           />
         </span>
       </div>
 
-      {/* 그룹 3: 속도 */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
-        <strong style={{ fontSize: "0.9em" }}>Speed: x{speed.toFixed(1)}</strong>
-        <button style={{ fontSize: "1em", padding: "0.3em 0.6em" }} onClick={handleSpeedDecrease}>–</button>
+      {/* 속도 조절 */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5em", marginLeft: "1.5em" }}>
+        <strong
+          style={fixedMonoTextStyle}>
+            <span>Speed: x</span>
+            <span style={{
+              display: "inline-block",
+              fontFamily: "monospace",
+              width: "50px",               // 숫자 영역 고정
+              textAlign: "right",
+            }}>
+              {speed.toFixed(1)}
+            </span>
+        </strong>
+
+
+
+        <button style={darkButtonStyle} onClick={handleSpeedDecrease}>–</button>
         <input
           type="range"
           min="1"
@@ -198,9 +212,9 @@ function PlaybackController({
           step="1"
           value={speed}
           onChange={handleSpeedChange}
-          style={{ width: "8em" }}
+          style={{ width: "100px" }}
         />
-        <button style={{ fontSize: "1em", padding: "0.3em 0.6em" }} onClick={handleSpeedIncrease}>+</button>
+        <button style={darkButtonStyle} onClick={handleSpeedIncrease}>+</button>
       </div>
     </div>
   );

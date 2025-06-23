@@ -1,6 +1,5 @@
 import React, { useRef, useState, useCallback } from "react";
 import axios from "axios";
-import { getAPIBase } from "../utils/api"; // ✅ API 주소 자동 전환
 
 function UploadController({ onRouteDataUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,9 +26,8 @@ function UploadController({ onRouteDataUpdate }) {
     formData.append("file", selectedFile);
 
     try {
-      // ✅ Input 모드일 때는 API 바로 호출
       if (uploadMode === "input") {
-        const res = await axios.post(`${getAPIBase()}/api/generate`, formData);
+        const res = await axios.post("/api/generate", formData);
         const json = res.data;
         if (json.routes) {
           onRouteDataUpdate(json.routes);
@@ -37,14 +35,13 @@ function UploadController({ onRouteDataUpdate }) {
         } else {
           throw new Error("routes 데이터가 없습니다.");
         }
-      }
-
-      // ✅ Output JSON 업로드는 기존처럼 처리
-      else if (uploadMode === "output_json") {
-        const res = await axios.post(`${getAPIBase()}/upload_output_json`, formData);
-        const data = res.data;
-        onRouteDataUpdate(data);
+      } else if (uploadMode === "output_json") {
+        await axios.post("/upload_output_json", formData);
         alert("✅ output.json 업로드 완료");
+
+        const routeRes = await fetch("/route_output.json");
+        const data = await routeRes.json();
+        onRouteDataUpdate(data);
       }
 
       setIsModalOpen(false);
@@ -72,14 +69,11 @@ function UploadController({ onRouteDataUpdate }) {
       {/* 📂 업로드 버튼 2개 */}
       <div
         style={{
-          position: "absolute",
-          bottom: 20,
-          left: 20,
-          zIndex: 1000,
-          backgroundColor: "white",
+          backgroundColor: "rgba(0,0,0,0.6)",
+          color: "white",
           padding: "10px 16px",
           borderRadius: "8px",
-          boxShadow: "0 0 6px rgba(0,0,0,0.3)",
+          backdropFilter: "blur(6px)",
           fontSize: "14px",
           display: "flex",
           alignItems: "center",
@@ -123,9 +117,7 @@ function UploadController({ onRouteDataUpdate }) {
               {uploadMode === "output_json" && "🗂 Output (json) 업로드"}
             </h3>
 
-            {/* 좌우 정렬 */}
             <div style={{ display: "flex", justifyContent: "space-between", gap: "20px", marginTop: 20 }}>
-              {/* 왼쪽: 파일 선택 버튼 */}
               <label
                 style={{
                   flex: 1,
@@ -146,7 +138,6 @@ function UploadController({ onRouteDataUpdate }) {
                 />
               </label>
 
-              {/* 오른쪽: 드래그 앤 드롭 */}
               <div
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
@@ -163,14 +154,12 @@ function UploadController({ onRouteDataUpdate }) {
               </div>
             </div>
 
-            {/* 선택된 파일 정보 */}
             {selectedFile && (
               <div style={{ marginTop: 16, fontSize: "13px", color: "#333" }}>
                 ✅ 선택된 파일: <strong>{selectedFile.name}</strong> ({(selectedFile.size / 1024).toFixed(1)} KB)
               </div>
             )}
 
-            {/* 버튼 */}
             <div style={{ marginTop: 24, display: "flex", justifyContent: "center", gap: "12px" }}>
               <button onClick={() => setIsModalOpen(false)}>❌ 취소</button>
               <button onClick={handleConfirmUpload} disabled={!selectedFile}>✅ 확인</button>

@@ -11,7 +11,7 @@ export function useStationCoords() {
         const map = {};
         for (const feature of data.features) {
           const id = feature.properties.StationID;
-          const coords = feature.geometry.coordinates;
+          const coords = feature.geometry.coordinates; // [lng, lat]
           map[id] = coords;
         }
         setStationMap(map);
