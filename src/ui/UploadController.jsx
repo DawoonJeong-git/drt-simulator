@@ -1,7 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import axios from "axios";
 import { getAPIBase } from "../utils/api";
-import { Save } from "lucide-react";
 
 function UploadController({ onRouteDataUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +55,6 @@ function UploadController({ onRouteDataUpdate }) {
   const handleLoadDefaultInput = async () => {
     try {
       const res = await fetch("/route_input.csv");
-      
       const text = await res.text();
       const blob = new Blob([text], { type: "text/csv" });
 
@@ -67,8 +65,6 @@ function UploadController({ onRouteDataUpdate }) {
         method: "POST",
         body: formData,
       });
-
-
 
       const json = await uploadRes.json();
       if (json.routes) {
@@ -113,7 +109,7 @@ function UploadController({ onRouteDataUpdate }) {
         }}
       >
         <button onClick={handleLoadDefaultInput} title="기본 route_input.csv 불러오기">
-          <Save size={16} />
+          💾
         </button>
         <button onClick={() => openModalWithMode("input")}>📂 Input (csv)</button>
         <button onClick={() => openModalWithMode("output_json")}>🗂 Output (json)</button>
