@@ -39,22 +39,34 @@ function CombinedView() {
     return getUpcomingVehiclesByStation(routeData, elapsedTime, stationCoords);
   }, [routeData, elapsedTime, stationCoords]);
 
+  // ✅ 1. 레이어 업데이트 (elapsedTime에 따라)
   useEffect(() => {
-    if (routeData.length === 0 || !stationCoords || Object.keys(stationCoords).length === 0) {
-      setDeckLayers([]);
-      return;
-    }
-
-    const animate = async () => {
+    const updateLayers = async () => {
       const viewport = deckRef.current?.deck?.getViewports?.()[0];
       const layers = await getVehicleLayers(routeData, elapsedTime, stationCoords, viewport);
       setDeckLayers(layers);
-      animationRef.current = requestAnimationFrame(animate);
     };
 
-    animationRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationRef.current);
-  }, [routeData, elapsedTime, stationCoords]);
+    if (routeData.length > 0 && stationCoords && Object.keys(stationCoords).length > 0) {
+      updateLayers();
+    }
+  }, [elapsedTime, routeData, stationCoords]);
+
+  // ✅ 2. 렌더링 루프 유지 (최대 60fps 유지용, redraw용)
+  useEffect(() => {
+    if (routeData.length === 0 || !stationCoords || Object.keys(stationCoords).length === 0) {
+      return;
+    }
+
+    let animationId;
+
+    const loop = () => {
+      animationId = requestAnimationFrame(loop);
+    };
+
+    animationId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animationId);
+  }, [routeData, stationCoords]);
 
   return (
     <div

@@ -1,5 +1,0 @@
-﻿VehicleID,StartTime,Stop_1,Type_1,Stop_2,Type_2,Stop_3,Type_3,Stop_4,Type_4,Stop_5,Type_5,Stop_6,Type_6,Stop_7,Type_7,Stop_8,Type_8,Stop_9,Type_9,Stop_10
-1,8:02:00,S413000930,start,S413000410,end,,,,,,,,,,,,,,,
-2,8:02:30,S413000660,start,S413000720,end,,,,,,,,,,,,,,,
-3,8:03:00,S413000470,start,S413000880,end,,,,,,,,,,,,,,,
-1,8:20:00,S413000380,start,S413001630,start,S413000660,end,S413000720,end,,,,,,,,,,,

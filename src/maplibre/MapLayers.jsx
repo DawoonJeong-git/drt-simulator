@@ -28,12 +28,12 @@ export function addMapLibreLayers(map) {
     type: "circle",
     source: "station",
     paint: {
-      "circle-radius": 1,
+      "circle-radius": 1.5,
       "circle-color": "#ffffff",
-      "circle-opacity": 0.8,
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "#ffff00",
-      "circle-stroke-opacity": 0.8,
+      "circle-opacity": 0.6,
+      "circle-stroke-width": 2.5,
+      "circle-stroke-color": "#000000",
+      "circle-stroke-opacity": 0.6,
     },
   });
 
