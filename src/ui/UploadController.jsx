@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback } from "react";
 import axios from "axios";
 import { getAPIBase } from "../utils/api";
+import { Save } from "lucide-react";
 
 function UploadController({ onRouteDataUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,6 +53,36 @@ function UploadController({ onRouteDataUpdate }) {
     }
   };
 
+  const handleLoadDefaultInput = async () => {
+    try {
+      const res = await fetch("/route_input.csv");
+      
+      const text = await res.text();
+      const blob = new Blob([text], { type: "text/csv" });
+
+      const formData = new FormData();
+      formData.append("file", blob, "route_input.csv");
+
+      const uploadRes = await fetch(`${getAPIBase()}/api/generate`, {
+        method: "POST",
+        body: formData,
+      });
+
+
+
+      const json = await uploadRes.json();
+      if (json.routes) {
+        onRouteDataUpdate(json.routes);
+        alert("✅ 기본 CSV로 경로 생성 완료");
+      } else {
+        throw new Error("routes 데이터가 없습니다.");
+      }
+    } catch (err) {
+      console.error("❌ 기본 route_input.csv 불러오기 실패:", err);
+      alert("❌ 불러오기 실패: " + (err.message || "알 수 없는 오류"));
+    }
+  };
+
   const handleFileChange = (e) => {
     handleFile(e.target.files[0]);
   };
@@ -67,7 +98,7 @@ function UploadController({ onRouteDataUpdate }) {
 
   return (
     <>
-      {/* 📂 업로드 버튼 2개 */}
+      {/* 📂 업로드 버튼들 + 💾 저장 버튼 */}
       <div
         style={{
           backgroundColor: "rgba(0,0,0,0.6)",
@@ -81,11 +112,14 @@ function UploadController({ onRouteDataUpdate }) {
           gap: "10px",
         }}
       >
+        <button onClick={handleLoadDefaultInput} title="기본 route_input.csv 불러오기">
+          <Save size={16} />
+        </button>
         <button onClick={() => openModalWithMode("input")}>📂 Input (csv)</button>
         <button onClick={() => openModalWithMode("output_json")}>🗂 Output (json)</button>
       </div>
 
-      {/* 🪟 공통 모달 */}
+      {/* 🪟 업로드 모달 */}
       {isModalOpen && (
         <div
           style={{
